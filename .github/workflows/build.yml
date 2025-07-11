@@ -1,0 +1,32 @@
+name: Build Spigot 1.21.0
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: 'adopt'
+
+      - name: Download BuildTools
+        run: curl -o BuildTools.jar https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar
+
+      - name: Run BuildTools
+        run: |
+          mkdir build
+          cd build
+          java -jar ../BuildTools.jar --rev 1.21.0
+
+      - name: Upload Spigot API
+        uses: actions/upload-artifact@v3
+        with:
+          name: spigot-api-1.21.0
+          path: build/Spigot/Spigot-API/target/spigot-api-1.21.0-R0.1-SNAPSHOT.jar
